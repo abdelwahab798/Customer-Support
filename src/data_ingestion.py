@@ -1,9 +1,6 @@
 import pandas as pd 
 import logging 
 import os 
-import yaml
-from sklearn.model_selection import train_test_split
-
 log_dir="logs"
 os.makedirs(log_dir,exist_ok=True)
 
@@ -13,7 +10,7 @@ logger.setLevel("DEBUG")
 consle_handler=logging.StreamHandler()
 consle_handler.setLevel("DEBUG")
 
-log_file_path=os.path.join(log_dir,"data_ingestion.log")
+log_file_path=os.path.join(log_dir,"Project.log")
 file_handler=logging.FileHandler(log_file_path)
 file_handler.setLevel("DEBUG")
 
@@ -38,7 +35,7 @@ def simple_preprocess_data(df:pd.DataFrame)->pd.DataFrame:
     try:
         df=df.dropna()
         df=df.drop_duplicates()
-        logger.info("Data simple preprocessed successfully.")
+        logger.info("Data simple preprocessed successfully")
         return df
     except Exception as e:
         logger.error(f"Error occurred while simple preprocessing data: {e}")
