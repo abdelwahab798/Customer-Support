@@ -1,6 +1,8 @@
 import requests
 import pandas as pd
 import os
+from dotenv import load_dotenv
+load_dotenv()
 REPO = "microsoft/vscode" 
 AUTH_TOKEN =os.getenv("API_KEY") 
 headers = {"Authorization": f"token {AUTH_TOKEN}"}
