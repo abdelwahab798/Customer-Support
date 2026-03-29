@@ -2,6 +2,7 @@ import pandas as pd
 import logging 
 import os 
 from data_ingestion import simple_preprocess_data
+from sklearn.model_selection import train_test_split
 log_dir="logs"
 os.makedirs(log_dir,exist_ok=True)
 
@@ -23,31 +24,9 @@ logger.addHandler(consle_handler)
 logger.addHandler(file_handler)
 
 
-def label_mapping(label):
-    if label in ["spam","invalid"]:
-        return "Spam"
-    elif label in ["bug","duplicate","caused-by-extension","freeze-slow-crash-leak","unit-test-failure"]:
-        return "Bug"
-    elif label in ["info-needed","question","author-verification-requested"]:
-        return "Support"
-    elif label in ["feature-request","enhancement","polish"]:
-        return "Feature"
-    else:
-        return None
-
-def features(df: pd.DataFrame) -> pd.DataFrame:
-    try:
-        df["label"]=df["label"].map(label_mapping)
-        logger.info("Features created successfully")
-        df=simple_preprocess_data(df)
-        logger.info("Data simple preprocessed successfully after feature engineering")
-        return df
-    except Exception as e:
-        logger.error(f"Error occurred while creating features: {e}")
-        raise
 
 
-def encode_labels(df: pd.DataFrame) -> pd.DataFrame:
+def encode_labels(df: pd.DataFrame,file_path:str) -> pd.DataFrame:
     try:
         label_map={"Support": 0, "Bug": 1, "Spam": 2,"Feature":3}
         df["label"]= df["label"].map(label_map)
@@ -65,9 +44,19 @@ def concatenate_title_body(df: pd.DataFrame) -> pd.DataFrame:
         logger.info("Data simple preprocessed successfully after concatenating title and body")
         df.drop(columns=["title","body"],inplace=True)
         logger.info("Dropped title and body columns successfully")
+        df["label"]=df["label"].astype(int)
         return df
     except Exception as e:
         logger.error(f"Error occurred while concatenating title and body: {e}")
+        raise
+
+def split(df:pd.DataFrame)->tuple:
+    try:
+        df_train, df_test = train_test_split(df, test_size=0.2, random_state=42, stratify=df["label"])
+        logger.info("Data split into train and test sets successfully")
+        return df_train, df_test
+    except Exception as e:
+        logger.error(f"Error occurred while splitting data: {e}")
         raise
 
 def save_data(df:pd.DataFrame, file_path:str):
@@ -80,11 +69,13 @@ def save_data(df:pd.DataFrame, file_path:str):
 
 def main():
     try:
-        df=pd.read_csv(r"Data\Processed_data\processed_github_issues.csv")
-        df=features(df)
-        df=encode_labels(df)
+        file_path=r"Data\Full_processed_data\full_preprocessed_github_issues.csv"
+        df=pd.read_csv(file_path)
+        df=encode_labels(df,file_path)
         df=concatenate_title_body(df)
-        save_data(df,r"Data/Full_processed_data/feature_engineered_data.csv")
+        train_df,test_df=split(df)
+        save_data(train_df,r"Data\data_new_features\train_data.csv")
+        save_data(test_df,r"Data\data_new_features\test_data.csv")
     except Exception as e:
         logger.error(f"Error occurred in main function: {e}")
         raise
