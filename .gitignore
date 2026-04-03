@@ -4,10 +4,8 @@ __pycache__/
 *$py.class
 expierment/final_issue_model
 expierment/results
-models/distilbert_finetuned/checkpoint-174
-models/distilbert_finetuned/checkpoint-348
-models/distilbert_finetuned/checkpoint-522
-models/distilbert_finetuned/checkpoint-696
+models
+
 # C extensions
 *.so
 .vscode
