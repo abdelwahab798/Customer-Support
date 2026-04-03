@@ -4,8 +4,8 @@ __pycache__/
 *$py.class
 expierment/final_issue_model
 expierment/results
-models
-
+models/
+*.safetensors
 # C extensions
 *.so
 .vscode
