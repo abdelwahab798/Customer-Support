@@ -39,12 +39,13 @@ def encode_labels(df: pd.DataFrame,file_path:str) -> pd.DataFrame:
 def concatenate_title_body(df: pd.DataFrame) -> pd.DataFrame:
     try:
         df["text"]=df["title"]+" "+df["body"]
-        logger.info("Title and body concatenated successfully")
+        df.rename(columns={"label": "labels"}, inplace=True)
+        logger.info("Title and body concatenated successfully and labels column renamed to labels")
         df=simple_preprocess_data(df)
         logger.info("Data simple preprocessed successfully after concatenating title and body")
         df.drop(columns=["title","body"],inplace=True)
         logger.info("Dropped title and body columns successfully")
-        df["label"]=df["label"].astype(int)
+        df["labels"]=df["labels"].astype(int)
         return df
     except Exception as e:
         logger.error(f"Error occurred while concatenating title and body: {e}")
@@ -52,9 +53,10 @@ def concatenate_title_body(df: pd.DataFrame) -> pd.DataFrame:
 
 def split(df:pd.DataFrame)->tuple:
     try:
-        df_train, df_test = train_test_split(df, test_size=0.2, random_state=42, stratify=df["label"])
-        logger.info("Data split into train and test sets successfully")
-        return df_train, df_test
+        df_train, temp_df = train_test_split(df, test_size=0.2, random_state=42, stratify=df["labels"])
+        val_df, df_test = train_test_split(temp_df, test_size=0.5, stratify=temp_df["labels"], random_state=42)
+        logger.info("Data split into train, validation, and test sets successfully")
+        return df_train, df_test, val_df
     except Exception as e:
         logger.error(f"Error occurred while splitting data: {e}")
         raise
@@ -73,9 +75,11 @@ def main():
         df=pd.read_csv(file_path)
         df=encode_labels(df,file_path)
         df=concatenate_title_body(df)
-        train_df,test_df=split(df)
+        train_df,test_df,val_df=split(df)
+        save_data(df,r"Data\data_new_features\full_data.csv")
         save_data(train_df,r"Data\data_new_features\train_data.csv")
         save_data(test_df,r"Data\data_new_features\test_data.csv")
+        save_data(val_df,r"Data\data_new_features\val_data.csv")
     except Exception as e:
         logger.error(f"Error occurred in main function: {e}")
         raise
