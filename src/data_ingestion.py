@@ -1,6 +1,7 @@
 import pandas as pd 
 import logging 
 import os 
+from config import Config
 log_dir="logs"
 os.makedirs(log_dir,exist_ok=True)
 
@@ -62,11 +63,11 @@ def save_data(df:pd.DataFrame, file_path:str):
         raise
 
 def main():
-    raw_data_path=r"Data\Scraped_data\github_issues.csv"
+    raw_data_path=Config.Data_scraped_path
     df=load_data(raw_data_path)
     df=simple_preprocess_data(df)
     df=edit_raws(df)
-    save_data(df, r"Data\Processed_data\processed_github_issues.csv")
+    save_data(df, Config.Data_processed_path)
 
 if __name__=="__main__": 
     main()

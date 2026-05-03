@@ -175,7 +175,7 @@ def save_artifacts(trainer, tokenizer):
         raise
 
 def main():
-    df_train,df_test,df_val= load_data(r"Data\data_new_features\train_data.csv",r"Data\data_new_features\test_data.csv",r"Data\data_new_features\val_data.csv")
+    df_train,df_test,df_val= load_data(Config.Data_train_path,Config.Data_test_path,Config.Data_val_path)
     tokenizer= load_tokenizer()
     train_dataset, test_dataset, val_dataset= prepare_datasets(df_train,df_test,df_val,tokenizer)
     model= load_model()

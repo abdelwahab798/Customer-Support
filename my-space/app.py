@@ -41,9 +41,9 @@ def load_model():
         artifacts_path = os.path.join(MODEL_DIR, "artifacts.json")
         with open(artifacts_path) as f:
             artifacts = json.load(f)
-        id2label  = {int(k): v for k, v in artifacts["id2label"].items()}
-        tokenizer = DistilBertTokenizerFast.from_pretrained(MODEL_DIR)
-        model     = AutoModelForSequenceClassification.from_pretrained(MODEL_DIR)
+        id2label= {int(k): v for k, v in artifacts["id2label"].items()}
+        tokenizer= DistilBertTokenizerFast.from_pretrained(MODEL_DIR)
+        model= AutoModelForSequenceClassification.from_pretrained(MODEL_DIR)
         model.eval()
         logger.info("Model and tokenizer loaded successfully ✓")
     except Exception as e:
@@ -64,7 +64,7 @@ class PredictResponse(BaseModel):
 
 @app.get("/", tags=["Health"])
 def root():
-    return {"status": "ok", "message": "GitHub Issues Classifier is running 🚀"}
+    return {"status": "ok", "message": "GitHub Issues Classifier is running"}
 
 @app.get("/health", tags=["Health"])
 def health():
@@ -84,11 +84,11 @@ def predict(request: PredictRequest):
             max_length=512,
         )
         with torch.no_grad():
-            outputs    = model(**inputs)
-            probs      = torch.softmax(outputs.logits, dim=-1).squeeze()
-            pred_id    = probs.argmax().item()
+            outputs= model(**inputs)
+            probs=torch.softmax(outputs.logits, dim=-1).squeeze()
+            pred_id= probs.argmax().item()
             confidence = probs[pred_id].item()
-        probabilities = {id2label[i]: round(probs[i].item(), 4) for i in range(len(id2label))}
+        probabilities ={id2label[i]: round(probs[i].item(), 4) for i in range(len(id2label))}
         return PredictResponse(
             label=id2label[pred_id],
             label_id=pred_id,

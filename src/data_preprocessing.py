@@ -3,6 +3,7 @@ import logging
 import os 
 from data_ingestion import simple_preprocess_data
 from data_ingestion import simple_preprocess_data
+from config import Config
 
 log_dir="logs"
 os.makedirs(log_dir,exist_ok=True)
@@ -59,9 +60,9 @@ def save_data(df: pd.DataFrame, file_path: str) -> None:
 
 def main():
     try:
-        file_path="Data/Processed_data/processed_github_issues.csv"
+        file_path=Config.Data_processed_path
         df=features(df=None,file_path=file_path)
-        save_data(df,r"Data\Full_processed_data\full_preprocessed_github_issues.csv")
+        save_data(df,Config.Data_full_processed_path)
     except Exception as e:
         logger.error(f"Error occurred in main function: {e}")
         raise

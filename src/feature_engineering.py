@@ -3,6 +3,7 @@ import logging
 import os 
 from data_ingestion import simple_preprocess_data
 from sklearn.model_selection import train_test_split
+from config import Config
 log_dir="logs"
 os.makedirs(log_dir,exist_ok=True)
 
@@ -71,15 +72,15 @@ def save_data(df:pd.DataFrame, file_path:str):
 
 def main():
     try:
-        file_path=r"Data\Full_processed_data\full_preprocessed_github_issues.csv"
+        file_path=Config.Data_processed_path
         df=pd.read_csv(file_path)
         df=encode_labels(df,file_path)
         df=concatenate_title_body(df)
         train_df,test_df,val_df=split(df)
-        save_data(df,r"Data\data_new_features\full_data.csv")
-        save_data(train_df,r"Data\data_new_features\train_data.csv")
-        save_data(test_df,r"Data\data_new_features\test_data.csv")
-        save_data(val_df,r"Data\data_new_features\val_data.csv")
+        save_data(df,Config.Data_new_features_path)
+        save_data(train_df,Config.Data_train_path)
+        save_data(test_df,Config.Data_test_path)
+        save_data(val_df,Config.Data_val_path)
     except Exception as e:
         logger.error(f"Error occurred in main function: {e}")
         raise
